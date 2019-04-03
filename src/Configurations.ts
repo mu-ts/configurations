@@ -36,10 +36,6 @@ class SecureCache {
   }
 }
 
-interface BasicObject {
-  [key: string]: BasicObject | string;
-}
-
 export class Configurations {
   private secretsManager: AWS.SecretsManager;
   private storeName: string;
@@ -48,7 +44,10 @@ export class Configurations {
 
   constructor(storeName: string, region?: string) {
     this.storeName = storeName;
-    this.secretsManager = new AWS.SecretsManager({ apiVersion: '2006-03-01', region });
+    this.secretsManager = new AWS.SecretsManager({
+      apiVersion: '2006-03-01',
+      region: region || Configurations.globalRegion,
+    });
     this.cache = new SecureCache(crypto.randomBytes(32));
   }
 
@@ -69,7 +68,7 @@ export class Configurations {
     let secretString: string | undefined = this.cache.get();
     if (!secretString) secretString = await this.loadSecrets();
     if (!secretString) return process.env[name] || someDefault;
-    const values: BasicObject = JSON.parse(secretString);
+    const values: { [key: string]: { [key: string]: string } | string } = JSON.parse(secretString);
     return values[name];
   }
 
