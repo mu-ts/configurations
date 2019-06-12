@@ -45,7 +45,7 @@ export class Configurations {
   constructor(storeName: string, region?: string) {
     this.storeName = storeName;
     this.secretsManager = new AWS.SecretsManager({
-      apiVersion: '2006-03-01',
+      apiVersion: '2017-10-17',
       region: region || Configurations.globalRegion,
     });
     this.cache = new SecureCache(crypto.randomBytes(32));
@@ -69,7 +69,7 @@ export class Configurations {
     if (!secretString) secretString = await this.loadSecrets();
     if (!secretString) return process.env[name] || someDefault;
     const values: { [key: string]: { [key: string]: string } | string } = JSON.parse(secretString);
-    return values[name];
+    return values[name] || process.env[name] || someDefault;
   }
 
   /**

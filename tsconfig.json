@@ -16,7 +16,7 @@
     "sourceMap": true,
     "preserveConstEnums": true,
     "outDir": "dist",
-    "rootDirs": ["src"]
+    "rootDirs": ["src", "test"]
   },
-  "exclude": ["node_modules", "test", ".cirrus.yml", ".prettierrc", "tsconfig.json", "tslint.json", ".git", "dist"]
+  "exclude": ["node_modules", ".cirrus.yml", ".prettierrc", "tsconfig.json", "tslint.json", ".git", "dist"]
 }
