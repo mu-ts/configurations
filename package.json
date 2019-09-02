@@ -6,15 +6,13 @@
   "types": "dist/Configurations.d.ts",
   "author": "matt.filion@gmail.com",
   "scripts": {
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "tslint -p .",
     "start": "npm run build:live",
     "build": "tsc -p .",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/Configurations.ts",
+    "build:live": "tsc -w -p .",
     "prepare": "npm run build",
-    "pretest": "npm run build",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts",
-    "xtest": "nyc mocha test",
-    "codecov": "mkdir .nyc_output && nyc report --reporter=json && codecov -f coverage/*.json"
+    "test": "nyc mocha -r ts-node/register test/**/*.spec.ts",
+    "coverage": "nyc report --reporter=lcov"
   },
   "files": [
     "dist/*",
@@ -53,5 +51,21 @@
     "AWS",
     "Secrets Manager",
     "Configuration"
-  ]
+  ],
+  "nyc": {
+    "include": [
+      "src/*.ts",
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "source-map-support/register"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
+  }
 }
