@@ -1,21 +1,20 @@
 {
   "name": "@mu-ts/configurations",
-  "version": "1.0.6",
-  "description": "",
-  "main": "dist/Configurations.js",
-  "types": "dist/Configurations.d.ts",
+  "version": "2.0.0",
+  "description": "Convenience around configurations.",
+  "main": "./lib/index",
+  "types": "./lib/index",
   "author": "matt.filion@gmail.com",
   "scripts": {
-    "lint": "tslint -p .",
-    "start": "npm run build:live",
     "build": "tsc -p .",
-    "build:live": "tsc -w -p .",
-    "prepare": "npm run build",
-    "test": "nyc mocha -r ts-node/register test/**/*.spec.ts",
-    "coverage": "nyc report --reporter=lcov"
+    "test": "nyc mocha -r ts-node/register spec/**/*.spec.ts",
+    "coverage": "nyc report --reporter text-summary",
+    "coverage-export": "nyc report --reporter=lcov > coverage.lcov",
+    "lint": "tslint -p .",
+    "clean": "rm -rf coverage lib .nyc_output"
   },
   "files": [
-    "dist/*",
+    "lib/*",
     "README.md",
     "LICENSE",
     "CODE_OF_CONDUCT.md"
@@ -34,18 +33,18 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.3",
     "@types/sinon": "^7.0.12",
-    "aws-sdk": "^2.430.0",
+    "aws-sdk": "^2.624.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "codecov": "^3.2.0",
     "mocha": "^6.1.4",
     "nyc": "^13.3.0",
-    "sinon": "^7.3.2",
+    "sinon": "^9.0.0",
     "source-map-support": "^0.5.11",
-    "ts-node": "^8.0.3",
+    "ts-node": "^8.6.2",
     "tslint": "^5.14.0",
     "tslint-eslint-rules": "^5.4.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.8.2"
   },
   "keywords": [
     "AWS",
@@ -67,5 +66,8 @@
     "sourceMap": true,
     "instrument": true,
     "all": true
+  },
+  "dependencies": {
+    "@mu-ts/logger": "^3.0.6"
   }
 }
