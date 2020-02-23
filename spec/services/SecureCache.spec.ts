@@ -6,8 +6,6 @@ import * as sinon from 'sinon';
 
 use(require('chai-as-promised'));
 
-process.env.LOG_LEVEL = 'trace';
-
 describe('SecureCache', async () => {
   describe('set', async () => {
     let sandbox: sinon.SinonSandbox;

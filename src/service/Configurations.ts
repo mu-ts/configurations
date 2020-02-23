@@ -90,6 +90,3 @@ export class Configurations {
     return '' + value;
   }
 }
-console.log(JSON.stringify(new Date()));
-process.env.LOG_LEVEL = 'warn;LocalStore trace;';
-new Configurations({ aboolean: true, aninteger: 1 }).get('aboolean').then((value: any) => console.log('value', value));

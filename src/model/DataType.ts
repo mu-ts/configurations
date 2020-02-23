@@ -4,6 +4,3 @@ export enum DataType {
   DATE,
   OBJECT,
 }
-
-const x: any = null;
-console.log('type', x instanceof null);

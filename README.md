@@ -4,7 +4,7 @@ Wrapper around Secrets Manager and process.env to lookup configuration values. S
 
 # Usage
 
-For the secret name, its wise to come up with a strategy around a 'stage' so that your configurations for each logical deployment are isolated. You should also bundle your secrets pre logical system, micro-service or unit of work. Per function is likely a bit to granular to be handy.
+For the secret name, its wise to come up with a strategy around a 'stage' or environment, so that your configurations for each logical deployment are isolated. You should also bundle your secrets pre logical system, micro-service or unit of work. Per function is likely a bit to granular to be handy.
 
 Example name assuming the stage is 'dev': `/dev/users-service`
 
@@ -14,6 +14,10 @@ Within the body of the secrets is expected to be JSON. You can have nested objec
 import { Configurations } from '@mu-ts/configuration';
 
 const configurations: Configurations = new Conigurations('secretmaanager/store/name');
+
+// Alternatively you can define configurations without secrets, and feed of defaults and environment variables.
+
+const configurations: Configurations = new Conigurations({my:'default values});
 
 const aValue:  any | undefined = await configurations.get('AValue','fallback-default');
 
