@@ -13,6 +13,7 @@ export class LocalStore implements Store {
   constructor(defaults: any) {
     this.logger = LoggerService.named({ name: this.constructor.name, adornments: { '@mu-ts': 'configurations' } });
     this.secureCache = new SecureCache();
+
     for (const key in defaults) {
       this.secureCache.set(key, defaults[key]);
     }

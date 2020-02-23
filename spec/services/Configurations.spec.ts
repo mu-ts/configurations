@@ -3,11 +3,8 @@ import { expect, use } from 'chai';
 import 'chai-as-promised';
 import { Configurations } from '../../src/service/Configurations';
 import * as sinon from 'sinon';
-import * as AWS from 'aws-sdk';
 
 use(require('chai-as-promised'));
-
-process.env.LOG_LEVEL = 'trace';
 
 describe('Configurations', async () => {
   let sandbox: sinon.SinonSandbox;

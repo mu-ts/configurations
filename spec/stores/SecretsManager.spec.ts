@@ -7,19 +7,6 @@ import { SecretsManagerStore } from '../../src/source/SecretsManagerStore';
 
 use(require('chai-as-promised'));
 
-export function mockModule<T extends { [K: string]: any }>(
-  moduleToMock: T,
-  defaultMockValuesForMock: Partial<{ [K in keyof T]: T[K] }>
-) {
-  return (sandbox: sinon.SinonSandbox, returnOverrides?: Partial<{ [K in keyof T]: T[K] }>): void => {
-    const functions = Object.keys(moduleToMock);
-    const returns = returnOverrides || {};
-    functions.forEach(f => {
-      sandbox.stub(moduleToMock, f).callsFake(returns[f] || defaultMockValuesForMock[f]);
-    });
-  };
-}
-
 describe('SecretsManagerStore', async () => {
   let sandbox: sinon.SinonSandbox;
   let secretsManagerStore: SecretsManagerStore;
@@ -32,7 +19,7 @@ describe('SecretsManagerStore', async () => {
       region: 'us-west-2',
     });
 
-    sandbox.stub(secretsManager, 'getSecretValue').value((value: any) => {
+    sandbox.stub(secretsManager, 'getSecretValue').value(() => {
       return { promise: () => Promise.resolve({ SecretString: '{"aboolean": true, "aninteger": 1}' }) };
     });
 
@@ -47,7 +34,7 @@ describe('SecretsManagerStore', async () => {
   it('should return a property from get() that exists', async () => {
     const result = await secretsManagerStore.get('aboolean');
     expect(result).to.not.be.undefined;
-    expect(result).to.equal('true');
+    expect(result).to.equal(true);
   });
 
   it("should return undefined for get() for a property that doesn't exist", async () => {

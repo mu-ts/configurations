@@ -1,35 +1,35 @@
 import { Logger, LoggerService } from '@mu-ts/logger';
-import { Store } from '../model/Store';
 import { SecretsManagerStore } from '../source/SecretsManagerStore';
 import { LocalStore } from '../source/LocalStore';
 import { EnvironmentStore } from '../source/EnvironmentStore';
 
 export class Configurations {
   private readonly logger: Logger;
-  private readonly stores: Store[];
+  private readonly localStore: LocalStore;
+  private readonly environmentStore: EnvironmentStore;
+  private readonly secretStore: SecretsManagerStore;
 
   constructor(storeName: string | any, region?: string, defaults?: any) {
     this.logger = LoggerService.named({ name: this.constructor.name, adornments: { '@mu-ts': 'configurations' } });
 
-    this.stores = [];
-
     if (typeof storeName === 'string') {
-      this.stores.push(new SecretsManagerStore(storeName, region));
+      this.secretStore = new SecretsManagerStore(storeName, region);
       if (defaults) {
         this.logger.info('init()', 'setting defaults', { defaults: Object.keys(defaults).join(' ') });
-        this.stores.push(new LocalStore(defaults));
+        this.localStore = new LocalStore(defaults);
       }
     }
 
     if (typeof storeName !== 'string') {
       this.logger.info('init()', 'setting defaults', { defaults: Object.keys(storeName).join(' ') });
-      this.stores.push(new LocalStore(storeName as any));
+      this.localStore = new LocalStore(storeName);
     }
 
-    this.stores.push(new EnvironmentStore());
-    this.stores.sort((first: Store, second: Store) => first.priority() - second.priority());
+    this.environmentStore = new EnvironmentStore();
 
-    this.logger.info('init()', { stores: this.stores.map((store: Store) => store.constructor.name) });
+    if (!this.localStore) this.localStore = this.localStore = new LocalStore({});
+
+    this.logger.info('init()');
   }
 
   /**
@@ -39,13 +39,22 @@ export class Configurations {
    */
   public async get(name: string, someDefault?: any): Promise<any | undefined> {
     this.logger.trace('get()', { name, someDefault });
-    const value: any | undefined = this.stores.reduce((value: any | undefined, store: Store) => {
-      if (value) return value;
-      return store.get(name);
-    }, undefined);
-    this.logger.trace('get()', { value });
-    if (value) return value;
-    return someDefault;
+
+    let value: any | undefined;
+
+    if (this.secretStore) value = await this.secretStore.get(name);
+
+    this.logger.trace('get()', 'value after looking through environment', { value });
+
+    if (!value) value = await this.environmentStore.get(name);
+
+    this.logger.trace('get()', 'value after looking through environment', { value });
+
+    if (!value) value = await this.localStore.get(name);
+
+    this.logger.trace('get()', 'value after looking through local', { value });
+
+    return value || someDefault;
   }
 
   /**
@@ -82,4 +91,5 @@ export class Configurations {
   }
 }
 
+process.env.LOG_LEVEL = 'warn;LocalStore trace;';
 new Configurations({ aboolean: true, aninteger: 1 }).get('aboolean').then((value: any) => console.log('value', value));

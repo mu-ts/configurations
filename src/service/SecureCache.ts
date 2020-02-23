@@ -1,4 +1,5 @@
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+import { CacheValue } from '../model/CacheValue';
 
 /**
  * Securely stores values in cache so they are erncrypted
@@ -19,15 +20,64 @@ export class SecureCache {
     this.values = {};
   }
 
-  public get(name: string): any | undefined {
-    const value: Buffer | undefined = this.values[name];
-    if (!value) return undefined;
-    return this.show(value);
+  /**
+   *
+   * @param name
+   * @param value
+   */
+  public set(name: string, value: any): void {
+    switch (typeof value) {
+      case 'undefined':
+        delete this.values[name];
+      case 'function':
+      case 'symbol':
+        return undefined;
+      case 'object':
+        if (value instanceof Date) {
+          this.values[name] = this.hide(
+            JSON.stringify({
+              type: 'date',
+              value: value.valueOf(),
+            })
+          );
+          break;
+        }
+      case 'string':
+      case 'number':
+      case 'boolean':
+      default:
+        if (value === null) delete this.values[name];
+        else
+          this.values[name] = this.hide(
+            JSON.stringify({
+              type: typeof value,
+              value: value,
+            })
+          );
+    }
   }
 
-  public set(name: string, value: any): void {
-    if (!value) return;
-    this.values[name] = this.hide(JSON.stringify(value));
+  /**
+   *
+   * @param name
+   */
+  public get<T extends string | boolean | number | Date | object>(name: string): T | undefined {
+    if (!this.values[name]) return undefined;
+    const entry: CacheValue = JSON.parse(this.show(this.values[name]));
+    switch (entry.type) {
+      case 'undefined':
+      case 'function':
+      case 'symbol':
+        return undefined;
+      case 'date':
+        return new Date(entry.value as number) as T;
+      case 'object':
+      case 'string':
+      case 'number':
+      case 'boolean':
+      default:
+        return entry.value as T;
+    }
   }
 
   /**
@@ -35,7 +85,6 @@ export class SecureCache {
    * @param value to cache.
    */
   private hide(value: any): Buffer {
-    if (!value) return undefined;
     const cipher = createCipheriv(this.algorithm, this.key, this.iv);
     const encrypted = cipher.update(value);
     return Buffer.concat([encrypted, cipher.final()]);
@@ -45,7 +94,6 @@ export class SecureCache {
    * Returns the string stored in cache.
    */
   private show(value: Buffer | undefined): string | undefined {
-    if (!value) return undefined;
     const decipher = createDecipheriv(this.algorithm, this.key, this.iv);
     const decrypted = decipher.update(value);
     return Buffer.concat([decrypted, decipher.final()]).toString();
