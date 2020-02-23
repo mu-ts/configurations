@@ -37,7 +37,7 @@ export class Configurations {
    * @param name of the configuration value to return.
    * @param someDefault to use if no configuration value is found.
    */
-  public async get(name: string, someDefault?: any): Promise<any | undefined> {
+  public async get<T>(name: string, someDefault?: T): Promise<T | undefined> {
     this.logger.trace('get()', { name, someDefault });
 
     let value: any | undefined;
@@ -90,6 +90,6 @@ export class Configurations {
     return '' + value;
   }
 }
-
+console.log(JSON.stringify(new Date()));
 process.env.LOG_LEVEL = 'warn;LocalStore trace;';
 new Configurations({ aboolean: true, aninteger: 1 }).get('aboolean').then((value: any) => console.log('value', value));

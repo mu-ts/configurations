@@ -10,6 +10,9 @@ import { SecureCache } from '../service/SecureCache';
  * Retrieve from AWS Secrets Manager
  */
 export class SecretsManagerStore implements Store {
+  private readonly DATE_REGEX: RegExp = new RegExp(
+    /^(\d{4})(?:-?W(\d+)(?:-?(\d+)D?)?|(?:-(\d+))?-(\d+))(?:[T ](\d+):(\d+)(?::(\d+)(?:\.(\d+))?)?)?(?:Z(-?\d*))?$/g
+  );
   private readonly logger: Logger;
   private readonly storeName: string;
   private readonly region: string | undefined;
@@ -79,7 +82,11 @@ export class SecretsManagerStore implements Store {
       this.logger.debug('load()', 'values parsed from secrets.');
 
       for (const key in values) {
-        this.secureCache.set(key, values[key]);
+        if (typeof values[key] === 'string' && this.DATE_REGEX.test(values[key] as string)) {
+          this.secureCache.set(key, new Date(values[key] as string));
+        } else {
+          this.secureCache.set(key, values[key]);
+        }
       }
     } catch (error) {
       if (error.message.startsWith('There is no secret')) throw error;
