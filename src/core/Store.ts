@@ -32,6 +32,7 @@ export class Store {
    * Tells the configuration store to use environment variables.
    */
   public environment() {
+    this.logger.debug('environment()', 'environment store');
     this.sources.push(new EnvironmentStore());
     return this;
   }
@@ -54,7 +55,7 @@ export class Store {
    * @param values to store as configuration values.
    */
   public defaults(values: { [key: string]: any }): Store {
-    this.logger.debug('secretManager()', 'default store', { values });
+    this.logger.debug('defaults()', 'default store', { values });
     this.sources.push(new LocalStore(values));
     return this;
   }
@@ -65,7 +66,7 @@ export class Store {
    * @param customSource to resovle configuration values using.
    */
   public custom(customSource: Source): Store {
-    this.logger.debug('secretManager()', 'custom store being added.');
+    this.logger.debug('custom()', 'custom store being added.');
     this.sources.push(customSource);
     return this;
   }
