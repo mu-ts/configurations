@@ -1,1 +1,1 @@
-export * from './service/Configurations';
+export * from './core/Configurations';

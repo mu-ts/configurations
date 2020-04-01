@@ -3,13 +3,13 @@ import { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/s
 
 import { Logger, LoggerService } from '@mu-ts/logger';
 
-import { Store } from '../model/Store';
-import { SecureCache } from '../service/SecureCache';
+import { Source } from './Source';
+import { SecureCache } from '../core/SecureCache';
 
 /**
  * Retrieve from AWS Secrets Manager
  */
-export class SecretsManagerStore implements Store {
+export class SecretsManagerStore implements Source {
   private readonly DATE_REGEX: RegExp = new RegExp(
     /^(\d{4})(?:-?W(\d+)(?:-?(\d+)D?)?|(?:-(\d+))?-(\d+))(?:[T ](\d+):(\d+)(?::(\d+)(?:\.(\d+))?)?)?(?:Z(-?\d*))?$/g
   );
@@ -31,10 +31,6 @@ export class SecretsManagerStore implements Store {
     });
 
     this.logger.info('init()');
-  }
-
-  public priority(): number {
-    return 1;
   }
 
   /**

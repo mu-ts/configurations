@@ -1,13 +1,9 @@
-import { Store } from '../model/Store';
+import { Source } from './Source';
 
 /**
  * Uses environment variables.
  */
-export class EnvironmentStore implements Store {
-  public priority(): number {
-    return 5;
-  }
-
+export class EnvironmentStore implements Source {
   public get(name: string): Promise<any | undefined> {
     const value: string | undefined = process.env[name];
     if (!value) return Promise.resolve();

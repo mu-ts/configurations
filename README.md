@@ -1,30 +1,32 @@
 # Summary
 
-Wrapper around Secrets Manager and process.env to lookup configuration values. Secrets manager is the preferred source so it will override all other configuration values.
+Convenience around configurations.
 
-# Usage
+## Usage
 
-For the secret name, its wise to come up with a strategy around a 'stage' or environment, so that your configurations for each logical deployment are isolated. You should also bundle your secrets pre logical system, micro-service or unit of work. Per function is likely a bit to granular to be handy.
+### Declare Sources
 
-Example name assuming the stage is 'dev': `/dev/users-service`
+To return more than just your defaults, you will need to define the sources you want considered during a value lookup. The order or declaration, will determine the order they are queried in.
 
-Within the body of the secrets is expected to be JSON. You can have nested objects and it will mostly work, but this is not thoroughly tested.
+This example prioritizes secrets manager above all, then environment variables then a hard coded set of default values.
 
 ```
-import { Configurations } from '@mu-ts/configuration';
+Configurations.store
+  .secretManager('store-name', process.env.AWS_REGION)
+  .environment()
+  .defaults({"foo":"bar"})
+```
 
-const configurations: Configurations = new Conigurations('secretmaanager/store/name');
+### Use Values
 
-// Alternatively you can define configurations without secrets, and feed of defaults and environment variables.
+To get raw values, you can use a simple get operation.
 
-const configurations: Configurations = new Conigurations({my:'default values});
+```
+const myConfig: any = await Configurations.get('a-value');
+```
 
-const aValue:  any | undefined = await configurations.get('AValue','fallback-default');
+To cast as the values are returned.
 
-/* All non true statements evaluate to false, including no value being found. */
-const aBoolean: boolean = configurations.getAsBoolean('AnotherValue',false);
-
-const aString: string | undefined = await configurations.getAsString('SomeString','SomeDefault');
-
-const aNumber: number | undefined = await configurations.getAsNumber('someNumber',100);
+```
+const myConfig: string = await Configurations.as.string('a-value');
 ```

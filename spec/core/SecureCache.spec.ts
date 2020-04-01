@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect, use } from 'chai';
 import 'chai-as-promised';
-import { SecureCache } from '../../src/service/SecureCache';
+import { SecureCache } from '../../src/core/SecureCache';
 import * as sinon from 'sinon';
 
 use(require('chai-as-promised'));

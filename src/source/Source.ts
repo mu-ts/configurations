@@ -1,4 +1,3 @@
-export interface Store {
-  priority(): number;
+export interface Source {
   get(name: string): Promise<any | undefined>;
 }

@@ -1,12 +1,12 @@
 import { Logger, LoggerService } from '@mu-ts/logger';
 
-import { Store } from '../model/Store';
-import { SecureCache } from '../service/SecureCache';
+import { Source } from './Source';
+import { SecureCache } from '../core/SecureCache';
 
 /**
  * In memory store.
  */
-export class LocalStore implements Store {
+export class LocalStore implements Source {
   private readonly secureCache: SecureCache;
   private readonly logger: Logger;
 
@@ -19,11 +19,6 @@ export class LocalStore implements Store {
     }
     this.logger.info('init()');
   }
-
-  public priority(): number {
-    return 10;
-  }
-
   public get(name: string): Promise<any | undefined> {
     return this.secureCache.get(name);
   }
