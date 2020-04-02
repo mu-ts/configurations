@@ -49,7 +49,8 @@ export class Configurations {
     this.logger.trace('get()', { name, someDefault });
 
     const value: any | undefined = await this.store._list.reduce(async (value: any | undefined, source: Source) => {
-      if (value) return value;
+      const resolvedValue = await value;
+      if (resolvedValue) return resolvedValue;
       return await source.get(name);
     }, undefined);
 
