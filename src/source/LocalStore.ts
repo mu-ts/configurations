@@ -19,6 +19,14 @@ export class LocalStore implements Source {
     }
     this.logger.info('init()');
   }
+
+  /**
+   *
+   */
+  public async refresh(): Promise<void> {
+    this.logger.debug('refresh()', 'refresh requested, doing nothing.');
+  }
+
   public get(name: string): Promise<any | undefined> {
     return this.secureCache.get(name);
   }
