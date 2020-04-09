@@ -3,6 +3,7 @@ import { expect, use } from 'chai';
 import 'chai-as-promised';
 import { Configurations } from '../../src/core/Configurations';
 import * as sinon from 'sinon';
+import { Source } from '../../src/source/Source';
 
 use(require('chai-as-promised'));
 
@@ -94,6 +95,55 @@ describe('Configurations as defaults', async () => {
       expect(result).to.not.be.undefined;
       expect(result).to.be.a('number');
       expect(result).to.equal(1);
+    });
+  });
+
+  describe('recovery on missthreshold', async () => {
+    let refreshSpy: sinon.SinonSpy;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+
+      let customSource: Source = {
+        refresh: () => Promise.resolve(),
+        get: () => {
+          return undefined;
+        },
+      };
+      Configurations.store.custom(customSource);
+
+      refreshSpy = sinon.spy(customSource, 'refresh');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('reload after 5 misses', async () => {
+      let value: any = await Configurations.get('anykey');
+
+      expect(value).to.be.undefined;
+      expect(refreshSpy.notCalled).to.be.true;
+
+      value = await Configurations.get('anykey');
+      expect(value).to.be.undefined;
+      expect(refreshSpy.notCalled).to.be.true;
+
+      value = await Configurations.get('anykey');
+      expect(value).to.be.undefined;
+      expect(refreshSpy.notCalled).to.be.true;
+
+      value = await Configurations.get('anykey');
+      expect(value).to.be.undefined;
+      expect(refreshSpy.notCalled).to.be.true;
+
+      value = await Configurations.get('anykey');
+      expect(value).to.be.undefined;
+      expect(refreshSpy.notCalled).to.be.true;
+
+      value = await Configurations.get('anykey');
+      expect(value).to.be.undefined;
+      expect(refreshSpy.calledOnce).to.be.true;
     });
   });
 });

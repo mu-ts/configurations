@@ -48,7 +48,16 @@ export class SecretsManagerStore implements Source {
       await this.load();
       this.secureCache.set(`_mu-ts-cfg_${this.storeName}`, true);
     }
-    return this.secureCache.get(name);
+    let value: any = this.secureCache.get(name);
+    return value;
+  }
+
+  /**
+   *
+   */
+  public async refresh(): Promise<void> {
+    this.logger.debug('refresh()', 'refresh requested.');
+    await this.load();
   }
 
   /**
@@ -85,8 +94,17 @@ export class SecretsManagerStore implements Source {
         }
       }
     } catch (error) {
+      /**
+       * When a secret name is not properly defined, we cannot 'recover' from it so
+       * throw a hard failure.
+       */
       if (error.message.startsWith('There is no secret')) throw error;
-      this.logger.error('load()', 'Exception raised while trying to load secrets.');
+      /**
+       * There are plenty of conditions around connectivity where secrets re-loading
+       * will recover the configuration, so this allows the exception to log and continue.
+       * In the future, we will be more explicit about these failures.
+       */
+      this.logger.error('load()', 'Exception raised while trying to load secrets.', error);
     }
   }
 }

@@ -5,6 +5,8 @@ import { Conversionator } from './Conversionator';
 
 export class Configurations {
   private static _i: Configurations;
+  private missThreshold: number = 5;
+  private misses: number = 0;
 
   private readonly logger: Logger;
   private readonly store: Store;
@@ -33,7 +35,7 @@ export class Configurations {
   /**
    *
    * @param name of the configuration value to return.
-   * @param someDefault to use if no configuration value is found.
+   * @param someDefault to use if no configuration value is found. Using this value bypasses source reloading on to many misses.
    */
   public static async get<T>(name: string, someDefault?: T): Promise<T | undefined> {
     const value: any | undefined = await this.instance.get(name, someDefault);
@@ -43,17 +45,43 @@ export class Configurations {
   /**
    *
    * @param name of the configuration value to return.
-   * @param someDefault to use if no configuration value is found.
+   * @param someDefault to use if no configuration value is found. Using this value bypasses source reloading on to many misses.
    */
   public async get<T>(name: string, someDefault?: T): Promise<T | undefined> {
     this.logger.trace('get()', { name, someDefault });
 
-    const value: any | undefined = await this.store._list.reduce(async (value: any | undefined, source: Source) => {
+    let value: any | undefined = await this.findInStores(name, someDefault);
+
+    /**
+     * If secrets are aggressively missed, reload them from their source to
+     * ensure the have not gone stale.
+     */
+    if (!value) this.misses++;
+    if (this.misses > this.missThreshold) {
+      this.misses = 0;
+      this.logger.info('get()', 'More than 5 misses on getting the name provided, reloading secrets.');
+
+      await Promise.all(this.store._list.map((store: Source) => store.refresh()));
+
+      value = await this.findInStores(name, someDefault);
+    }
+
+    return value;
+  }
+
+  /**
+   *
+   * @param name of the value to locate
+   * @param someDefault to use if nothing is found.
+   */
+  private async findInStores(name: string, someDefault?: any): Promise<any> {
+    const value: any = await this.store._list.reduce(async (value: any | undefined, source: Source) => {
       const resolvedValue = await value;
       if (resolvedValue) return resolvedValue;
       return await source.get(name);
     }, undefined);
 
+    if (!value) return someDefault;
     return value;
   }
 
