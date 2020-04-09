@@ -26,7 +26,7 @@ describe('Configurations as defaults', async () => {
     sandbox.restore();
   });
 
-  xdescribe('get', async () => {
+  describe('get', async () => {
     it('string', async () => {
       const result: string = await Configurations.get('astring');
       expect(result).to.not.be.undefined;
@@ -62,7 +62,7 @@ describe('Configurations as defaults', async () => {
     });
   });
 
-  xdescribe('as.boolean', async () => {
+  describe('as.boolean', async () => {
     it('boolean', async () => {
       const result: boolean = await Configurations.as.boolean('aboolean');
       expect(result).to.not.be.undefined;
@@ -71,7 +71,7 @@ describe('Configurations as defaults', async () => {
     });
   });
 
-  xdescribe('as.object', async () => {
+  describe('as.object', async () => {
     it('object', async () => {
       const result: boolean = await Configurations.as.object('aobject');
       expect(result).to.not.be.undefined;
@@ -80,7 +80,7 @@ describe('Configurations as defaults', async () => {
     });
   });
 
-  xdescribe('as.string', async () => {
+  describe('as.string', async () => {
     it('boolean', async () => {
       const result: string = await Configurations.as.string('astring');
       expect(result).to.not.be.undefined;
@@ -89,7 +89,7 @@ describe('Configurations as defaults', async () => {
     });
   });
 
-  xdescribe('as.number', async () => {
+  describe('as.number', async () => {
     it('boolean', async () => {
       const result: number = await Configurations.as.number('anumber');
       expect(result).to.not.be.undefined;
