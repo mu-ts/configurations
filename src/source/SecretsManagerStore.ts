@@ -32,6 +32,11 @@ export class SecretsManagerStore implements Source {
     this.secretsManager = new SecretsManager({
       apiVersion: '2017-10-17',
       region: this.region,
+      maxRetries: 3,
+      httpOptions: {
+        timeout: 30,
+        connectTimeout: 5,
+      },
     });
 
     this.logger.info('init()');

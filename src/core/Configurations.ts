@@ -56,17 +56,27 @@ export class Configurations {
      * If secrets are aggressively missed, reload them from their source to
      * ensure the have not gone stale.
      */
-    if (!value) this.misses++;
+    if (value === undefined || value === null) this.misses++;
     if (this.misses > this.missThreshold) {
       this.misses = 0;
-      this.logger.info('get()', 'More than 5 misses on getting the name provided, reloading secrets.');
+      this.logger.info('get()', 'More than 5 misses on getting the name provided, reloading stores.');
 
-      await Promise.all(this.store._list.map((store: Source) => store.refresh()));
+      await this.refresh();
 
       value = await this.findInStores(name, someDefault);
+
+      this.logger.info('get()', 'All stores refreshed.');
     }
 
     return value;
+  }
+
+  /**
+   * Force all value to reload.
+   */
+  public async refresh(): Promise<void> {
+    await Promise.all(this.store._list.map((store: Source) => store.refresh()));
+    return;
   }
 
   /**
