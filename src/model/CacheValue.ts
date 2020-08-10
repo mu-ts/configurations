@@ -1,6 +1,4 @@
-import { DataType } from 'aws-sdk/clients/frauddetector';
-
 export interface CacheValue {
-  type: DataType;
+  type: any;
   value: string | boolean | number | Date | object;
 }
