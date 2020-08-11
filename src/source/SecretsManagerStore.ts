@@ -34,8 +34,8 @@ export class SecretsManagerStore implements Source {
       region: this.region,
       maxRetries: 3,
       httpOptions: {
-        timeout: 30,
-        connectTimeout: 5,
+        timeout: 2000,
+        connectTimeout: 5000,
       },
     });
 
