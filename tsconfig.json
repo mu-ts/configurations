@@ -1,22 +1,20 @@
+/* Reference: https://www.typescriptlang.org/docs/handbook/compiler-options.html */
 {
   "compilerOptions": {
-    "lib": ["es2017"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es2017",
-    "types": ["node"],
-    "allowJs": false,
-    "strict": true,
-    "alwaysStrict": true,
-    "declaration": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "declaration": true,
     "noImplicitAny": true,
-    "removeComments": true,
-    "sourceMap": true,
-    "preserveConstEnums": true,
-    "outDir": "dist",
-    "rootDirs": ["src"]
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "lib": ["ES2016"],
+    "target": "ES2016",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "types": ["node"]
   },
-  "exclude": ["node_modules", "test",".cirrus.yml", ".prettierrc", "tsconfig.json", "tslint.json", ".git", "dist"]
+  "exclude": ["node_modules", "*.spec/**/*.spec.ts"],
+  "include": ["src/**/*"]
 }
