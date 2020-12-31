@@ -3,6 +3,7 @@ import { Source } from '../source/Source';
 import { EnvironmentStore } from '../source/EnvironmentStore';
 import { SecretsManagerStore } from '../source/SecretsManagerStore';
 import { LocalStore } from '../source/LocalStore';
+import { LambdaKMSStore } from '../source/LambdaKMSStore';
 /**
  * Used to store the configuration sources and determine
  * the order they are consulted in.
@@ -34,6 +35,15 @@ export class Store {
   public environment() {
     this.logger.debug('environment()', 'environment store');
     this.sources.push(new EnvironmentStore());
+    return this;
+  }
+
+  /**
+   * Tells the configuration store to use environment variables.
+   */
+  public lambdaKMSStore(lambdaARN: string, kmsARN: string, secrets: string, ...keys: string[]) {
+    this.logger.debug('environment()', 'environment store');
+    this.sources.push(new LambdaKMSStore(lambdaARN, kmsARN, secrets, ...keys));
     return this;
   }
 
