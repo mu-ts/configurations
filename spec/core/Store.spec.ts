@@ -17,6 +17,11 @@ describe('Store', async () => {
     expect(store._list).to.have.property('length').that.equals(1);
   });
 
+  it('to add lambdaKMSStore', async () => {
+    const store: Store = new Store().lambdaKMSStore('arn', 'kms', 'environment service', 'somekey');
+    expect(store._list).to.have.property('length').that.equals(1);
+  });
+
   it('to add custom', async () => {
     const store: Store = new Store().custom({
       get: async (name: string) => Promise.resolve(name),
