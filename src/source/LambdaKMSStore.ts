@@ -88,6 +88,7 @@ export class LambdaKMSStore implements Source {
         Object.keys(secrets).forEach((key: string) => this.secureCache.set(key, secrets[key]));
         this.logger.debug('refresh()', 'complete');
         this.initialized = true;
+        this.loading = undefined;
         resolve();
       } else {
         reject(new Error('We have a problem.'));
