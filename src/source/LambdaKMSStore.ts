@@ -20,6 +20,7 @@ export class LambdaKMSStore implements Source {
   private readonly lambda: Lambda;
   private readonly kms: KMS;
   private initialized: boolean = false;
+  private loading: Promise<any> = undefined;
 
   /**
    * This object must be initialized with all of the configuration keys you expect to load.
@@ -54,39 +55,46 @@ export class LambdaKMSStore implements Source {
    * Invoke the lambda function and retrieve all of the requested configkeys.
    */
   public async refresh(): Promise<void> {
-    const request: Lambda.InvocationRequest = {
-      FunctionName: this.lambdaARN, // the lambda function we are going to invoke
-      InvocationType: 'RequestResponse',
-      LogType: 'Tail',
-      Payload: JSON.stringify({
-        kms: this.kmsARN,
-        for: this.secrets,
-        keys: this.keys,
-      }),
-    };
+    if (this.loading) return this.loading;
 
-    this.logger.debug('refresh()', { request });
+    this.loading = new Promise(async (resolve, reject) => {
+      const request: Lambda.InvocationRequest = {
+        FunctionName: this.lambdaARN, // the lambda function we are going to invoke
+        InvocationType: 'RequestResponse',
+        LogType: 'Tail',
+        Payload: JSON.stringify({
+          kms: this.kmsARN,
+          for: this.secrets,
+          keys: this.keys,
+        }),
+      };
 
-    const response: Lambda.InvocationResponse = await this.lambda.invoke(request).promise();
+      this.logger.debug('refresh()', { request });
 
-    if (response.StatusCode !== 200 || !response.Payload) throw response;
+      const response: Lambda.InvocationResponse = await this.lambda.invoke(request).promise();
 
-    const payload: { blob: string; encoding: string } = JSON.parse(Buffer.from(response.Payload).toString());
+      if (response.StatusCode !== 200 || !response.Payload) throw response;
 
-    this.logger.debug('refresh()', { payload });
+      const payload: { blob: string; encoding: string } = JSON.parse(Buffer.from(response.Payload).toString());
 
-    const decryptResult: KMS.DecryptResponse = await this.kms
-      .decrypt({ CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding) })
-      .promise();
+      this.logger.debug('refresh()', { payload });
 
-    if (Buffer.isBuffer(decryptResult.Plaintext)) {
-      const secrets: { [key: string]: string } = JSON.parse(Buffer.from(decryptResult.Plaintext).toString());
-      Object.keys(secrets).forEach((key: string) => this.secureCache.set(key, secrets[key]));
-      this.logger.debug('refresh()', 'complete');
-      this.initialized = true;
-    } else {
-      throw new Error('We have a problem');
-    }
+      const decryptResult: KMS.DecryptResponse = await this.kms
+        .decrypt({ CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding) })
+        .promise();
+
+      if (Buffer.isBuffer(decryptResult.Plaintext)) {
+        const secrets: { [key: string]: string } = JSON.parse(Buffer.from(decryptResult.Plaintext).toString());
+        Object.keys(secrets).forEach((key: string) => this.secureCache.set(key, secrets[key]));
+        this.logger.debug('refresh()', 'complete');
+        this.initialized = true;
+        resolve();
+      } else {
+        reject(new Error('We have a problem.'));
+      }
+    });
+
+    return this.loading;
   }
 
   public async get(name: string): Promise<any | undefined> {
