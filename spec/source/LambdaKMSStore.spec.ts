@@ -47,7 +47,16 @@ describe('LambdaKMSStore', async () => {
     secureCache.set('anumber', '100');
     secureCache.set('AString', 'world');
 
-    lambdaKMSStore = new LambdaKMSStore('arn:lambda:test', 'arn:kms', 'development,test-service', 'ISSUER', 'FOO_BAR');
+    lambdaKMSStore = new LambdaKMSStore(
+      'arn:lambda:test',
+      'arn:kms',
+      'development test-service',
+      'ISSUER',
+      'FOO_BAR',
+      'anumber',
+      'aboolean',
+      'AString'
+    );
     sandbox.stub(lambdaKMSStore as any, 'kms').value(kms);
     sandbox.stub(lambdaKMSStore as any, 'lambda').value(lambda);
     sandbox.stub(lambdaKMSStore as any, 'initialized').value(true);

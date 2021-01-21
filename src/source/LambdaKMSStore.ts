@@ -42,8 +42,8 @@ export class LambdaKMSStore implements Source {
       region: this.region,
       maxRetries: 3,
       httpOptions: {
-        timeout: 500,
-        connectTimeout: 2000,
+        timeout: 2000,
+        connectTimeout: 5000,
       },
     });
     this.kms = new KMS({ region: this.region });
@@ -55,6 +55,7 @@ export class LambdaKMSStore implements Source {
    * Invoke the lambda function and retrieve all of the requested configkeys.
    */
   public async refresh(): Promise<void> {
+    this.logger.info('refresh()', { isLoading: !!this.loading });
     if (this.loading) return this.loading;
 
     this.loading = new Promise(async (resolve, reject) => {
@@ -89,6 +90,7 @@ export class LambdaKMSStore implements Source {
         this.logger.debug('refresh()', 'complete');
         this.initialized = true;
         this.loading = undefined;
+        this.logger.info('refresh()', 'resolved()');
         resolve();
       } else {
         reject(new Error('We have a problem.'));
@@ -99,6 +101,10 @@ export class LambdaKMSStore implements Source {
   }
 
   public async get(name: string): Promise<any | undefined> {
+    if (!this.keys.includes(name)) {
+      this.logger.warn('get()', 'Requesting a secret that will not be loaded from the secret store.');
+      return Promise.resolve(undefined);
+    }
     if (!this.initialized) await this.refresh();
     return this.secureCache.get(name);
   }
