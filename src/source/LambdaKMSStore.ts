@@ -42,8 +42,8 @@ export class LambdaKMSStore implements Source {
       region: this.region,
       maxRetries: 3,
       httpOptions: {
-        timeout: 500,
-        connectTimeout: 2000,
+        timeout: 2000,
+        connectTimeout: 5000,
       },
     });
     this.kms = new KMS({ region: this.region });
@@ -99,6 +99,10 @@ export class LambdaKMSStore implements Source {
   }
 
   public async get(name: string): Promise<any | undefined> {
+    if (!this.secrets.includes(name)) {
+      this.logger.warn('get()', 'Requesting a secret that will not be loaded from the secret store.');
+      return undefined;
+    }
     if (!this.initialized) await this.refresh();
     return this.secureCache.get(name);
   }
