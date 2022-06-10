@@ -25,13 +25,13 @@ describe('EnvironmentStore', async () => {
   });
 
   it('should return a boolean from get() that exists', async () => {
-    const result = await environmentStore.get('aboolean');
+    const result = await environmentStore.get('Aboolean');
     expect(result).to.not.be.undefined;
     expect(result).to.equal('true');
   });
 
   it('should return a number from get() that exists', async () => {
-    const result = await environmentStore.get('anumber');
+    const result = await environmentStore.get('aNumber');
     expect(result).to.not.be.undefined;
     expect(result).to.equal('100');
   });

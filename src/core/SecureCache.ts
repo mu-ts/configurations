@@ -2,7 +2,7 @@ import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 import { CacheValue } from '../model/CacheValue';
 
 /**
- * Securely stores values in cache so they are erncrypted
+ * Securely stores values in cache, so they are encrypted
  * while in memory and are a touch harder to discover.
  *
  * Note: Logging is deliberately avoided in this function to keep from providing

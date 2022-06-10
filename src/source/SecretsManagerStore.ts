@@ -34,7 +34,7 @@ export class SecretsManagerStore implements Source {
       region: this.region,
       maxRetries: 3,
       httpOptions: {
-        timeout: 2000,
+        timeout: 5000,
         connectTimeout: 5000,
       },
     });
@@ -45,11 +45,10 @@ export class SecretsManagerStore implements Source {
   /**
    *
    * @param name of the value to lookup.
-   * @param someDefault
    */
   public async get(name: string): Promise<any | undefined> {
     /**
-     * Lazy load secrets until one is requested and it is not stored
+     * Lazy load secrets until one is requested, and it is not stored
      * elsewhere.
      */
     if (!this.secureCache.get(`_mu-ts-cfg_${this.storeName}`)) {
@@ -57,8 +56,7 @@ export class SecretsManagerStore implements Source {
       await this.load();
       this.secureCache.set(`_mu-ts-cfg_${this.storeName}`, true);
     }
-    let value: any = this.secureCache.get(name);
-    return value;
+    return this.secureCache.get(name);
   }
 
   /**
@@ -106,7 +104,7 @@ export class SecretsManagerStore implements Source {
       }
 
       if (!values) {
-        this.logger.error('load()', 'There is no secret stringin the secret store.');
+        this.logger.error('load()', 'There is no secret string in the secret store.');
         throw Error(`There is no secret string in the secret store named ${this.storeName}.`);
       }
 
@@ -130,7 +128,7 @@ export class SecretsManagerStore implements Source {
         // Deal with the exception here, and/or rethrow at your discretion.
         this.logger.warn('load()', 'Exception raised while trying to load secrets.', error);
         /**
-         * Give the system a chance to self heal.
+         * Give the system a chance to self-heal.
          */
         return undefined;
       } else if (error.code === 'InternalServiceErrorException') {
@@ -138,7 +136,7 @@ export class SecretsManagerStore implements Source {
         // Deal with the exception here, and/or rethrow at your discretion.
         this.logger.warn('load()', 'Exception raised while trying to load secrets.', error);
         /**
-         * Give the system a chance to self heal.
+         * Give the system a chance to self-heal.
          */
         return undefined;
       } else if (error.code === 'InvalidParameterException') {

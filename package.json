@@ -1,6 +1,6 @@
 {
   "name": "@mu-ts/configurations",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "Convenience around configurations.",
   "main": "./lib/index",
   "types": "./lib/index",
@@ -29,22 +29,22 @@
   },
   "homepage": "https://github.com/mu-ts/configurations#readme",
   "devDependencies": {
-    "@types/chai": "^4.2.11",
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^11.15.42",
-    "@types/sinon": "^7.5.2",
-    "aws-sdk": "^2.819.0",
-    "chai": "^4.2.0",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^17.0.41",
+    "@types/sinon": "^10.0.11",
+    "aws-sdk": "^2.1152.0",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
-    "codecov": "^3.2.0",
-    "mocha": "^6.2.3",
-    "nyc": "^15.0.0",
-    "sinon": "^9.2.2",
-    "source-map-support": "^0.5.11",
-    "ts-node": "^8.8.1",
-    "tslint": "^5.14.0",
+    "codecov": "^3.8.2",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "sinon": "^14.0.0",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.8.1",
+    "tslint": "^5.20.1",
     "tslint-eslint-rules": "^5.4.0",
-    "typescript": "^3.8.3"
+    "typescript": "^4.7.3"
   },
   "keywords": [
     "AWS",
@@ -68,6 +68,6 @@
     "all": true
   },
   "dependencies": {
-    "@mu-ts/logger": "^3.0.6"
+    "@mu-ts/logger": "^3.1.1"
   }
 }
