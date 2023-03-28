@@ -2,7 +2,7 @@ import 'mocha';
 import { expect, use } from 'chai';
 import 'chai-as-promised';
 import * as sinon from 'sinon';
-import { SecretsManager } from 'aws-sdk';
+import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import { SecretsManagerStore } from '../../src/source/SecretsManagerStore';
 
 use(require('chai-as-promised'));

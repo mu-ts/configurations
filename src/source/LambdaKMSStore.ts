@@ -1,11 +1,10 @@
-import { KMS, Lambda } from 'aws-sdk';
+import { DecryptResponse, KMS } from '@aws-sdk/client-kms';
+import { InvokeCommandInput, InvokeCommandOutput, Lambda } from '@aws-sdk/client-lambda';
 
 import { Logger, LoggerService } from '@mu-ts/logger';
 
 import { Source } from './Source';
 import { SecureCache } from '../core/SecureCache';
-import { PromiseResult } from "aws-sdk/lib/request";
-import { AWSError } from "aws-sdk/lib/error";
 
 /**
  * This expects to interact with a Lambda service to request secrets and get back an encrypted value
@@ -42,11 +41,9 @@ export class LambdaKMSStore implements Source {
     this.keys = keys;
     this.lambda = new Lambda({
       region: this.region,
-      maxRetries: 3,
-      httpOptions: {
-        timeout: 5000,
-        connectTimeout: 5000,
-      },
+      maxAttempts: 3,
+      retryMode: 'standard',
+      defaultsMode: 'standard',
     });
     this.kms = new KMS({ region: this.region });
     this.initialized = false;
@@ -61,7 +58,7 @@ export class LambdaKMSStore implements Source {
     if (this.loading) return this.loading;
 
     this.loading = new Promise<void>(async (resolve, reject) => {
-      const request: Lambda.InvocationRequest = {
+      const request: InvokeCommandInput = {
         FunctionName: this.lambdaARN, // the lambda function we are going to invoke
         InvocationType: 'RequestResponse',
         LogType: 'Tail',
@@ -69,20 +66,19 @@ export class LambdaKMSStore implements Source {
           kms: this.kmsARN,
           for: this.secrets,
           keys: this.keys,
-        }),
+        }) as any as Uint8Array,
       };
       this.logger.debug('refresh()', { request });
 
-      const response: PromiseResult<Lambda.Types.InvocationResponse, AWSError> = await this.lambda.invoke(request).promise();
+      const response: InvokeCommandOutput = await this.lambda.invoke(request);
       if (response.StatusCode !== 200 || !response.Payload) throw response;
 
       // @ts-ignore
       const payload: { blob: string; encoding: string } = JSON.parse(Buffer.from(response.Payload).toString());
       this.logger.debug('refresh()', { payload });
 
-      const decryptResult: KMS.DecryptResponse = await this.kms
-        .decrypt({ CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding) })
-        .promise();
+      const decryptResult: DecryptResponse = await this.kms
+        .decrypt({ CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding) });
 
       if (Buffer.isBuffer(decryptResult.Plaintext)) {
         const secrets: { [key: string]: string } = JSON.parse(Buffer.from(decryptResult.Plaintext).toString());

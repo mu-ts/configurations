@@ -2,7 +2,8 @@ import 'mocha';
 import { expect, use } from 'chai';
 import 'chai-as-promised';
 import * as sinon from 'sinon';
-import { KMS, Lambda } from 'aws-sdk';
+import { KMS } from '@aws-sdk/client-kms';
+import { Lambda } from '@aws-sdk/client-lambda';
 import { LambdaKMSStore } from '../../src/source/LambdaKMSStore';
 import { SecureCache } from '../../src/core/SecureCache';
 

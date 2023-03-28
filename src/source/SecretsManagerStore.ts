@@ -1,5 +1,4 @@
-import { SecretsManager } from 'aws-sdk';
-import { GetSecretValueRequest, GetSecretValueResponse } from 'aws-sdk/clients/secretsmanager';
+import { GetSecretValueRequest, GetSecretValueResponse, SecretsManager } from '@aws-sdk/client-secrets-manager';
 
 import { Logger, LoggerService } from '@mu-ts/logger';
 
@@ -32,11 +31,9 @@ export class SecretsManagerStore implements Source {
     this.secretsManager = new SecretsManager({
       apiVersion: '2017-10-17',
       region: this.region,
-      maxRetries: 3,
-      httpOptions: {
-        timeout: 5000,
-        connectTimeout: 5000,
-      },
+      maxAttempts: 3,
+      retryMode: 'standard',
+      defaultsMode: 'standard',
     });
 
     this.logger.info('init()');
@@ -84,7 +81,7 @@ export class SecretsManagerStore implements Source {
       // In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
       // See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
       // We rethrow the exception by default.
-      const response: GetSecretValueResponse = await this.secretsManager.getSecretValue(parameters).promise();
+      const response: GetSecretValueResponse = await this.secretsManager.getSecretValue(parameters);
 
       this.logger.debug('load()', 'done');
 
