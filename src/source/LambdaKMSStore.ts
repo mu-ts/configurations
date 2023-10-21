@@ -70,7 +70,7 @@ export class LambdaKMSStore implements Source {
       };
       this.logger.debug('refresh()', { request });
 
-      const response: InvokeCommandOutput = await this.lambda.invoke(request);
+      const response: InvokeCommandOutput = await this.lambda.invoke(request, { requestTimeout: 5000 });
       if (response.StatusCode !== 200 || !response.Payload) throw response;
 
       // @ts-ignore

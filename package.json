@@ -1,6 +1,6 @@
 {
   "name": "@mu-ts/configurations",
-  "version": "3.0.2",
+  "version": "3.0.6",
   "description": "Convenience around configurations.",
   "main": "./lib/index",
   "types": "./lib/index",
@@ -29,28 +29,28 @@
   },
   "homepage": "https://github.com/mu-ts/configurations#readme",
   "dependencies": {
-    "@mu-ts/logger": "^3.1.1"
+    "@mu-ts/logger": "^3.2.0"
   },
   "peerDependencies": {
-    "@aws-sdk/client-lambda": "^3.301.0",
-    "@aws-sdk/client-kms": "^3.301.0",
-    "@aws-sdk/client-secrets-manager": "^3.301.0"
+    "@aws-sdk/client-kms": "^3.433.0",
+    "@aws-sdk/client-lambda": "^3.433.0",
+    "@aws-sdk/client-secrets-manager": "^3.433.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.4",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.15.11",
-    "@types/sinon": "^10.0.13",
-    "chai": "^4.3.7",
+    "@types/chai": "^4.3.9",
+    "@types/mocha": "^10.0.3",
+    "@types/node": "^18.18.6",
+    "@types/sinon": "^10.0.20",
+    "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "codecov": "^3.8.2",
+    "codecov": "^3.8.3",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "sinon": "^15.0.3",
+    "sinon": "^15.2.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
     "tslint": "^5.20.1",
-    "typescript": "4.9.5"
+    "typescript": "^5.2.2"
   },
   "keywords": [
     "AWS",

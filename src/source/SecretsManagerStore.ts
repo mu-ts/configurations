@@ -83,14 +83,14 @@ export class SecretsManagerStore implements Source {
       // We rethrow the exception by default.
       const response: GetSecretValueResponse = await this.secretsManager.getSecretValue(parameters);
 
-      this.logger.debug('load()', 'done');
+      this.logger.debug('load()', 'response done', { secretString: response.SecretString !== undefined});
 
       let values: { [key: string]: { [key: string]: string } | string };
 
       if ('SecretString' in response) {
         this.logger.debug('load()', 'Looking within "SecretString"');
 
-        if (response.SecretString) values = JSON.parse(response.SecretString);
+        if (response.SecretString) values = response.SecretString?.trim() === '' ? undefined : JSON.parse(response.SecretString);
       } else {
         this.logger.debug('load()', 'Looking within "SecretBinary"');
 

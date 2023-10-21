@@ -1,20 +1,12 @@
 /* Reference: https://www.typescriptlang.org/docs/handbook/compiler-options.html */
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
+    // Do not include 'experimental decorators' it breaks compilation.
+    "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "lib": ["es2017"],
-    "target": "es2017",
-    "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./lib",
-    "types": ["node"]
   },
-  "exclude": ["node_modules", "*.spec/**/*.spec.ts"],
-  "include": ["src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
