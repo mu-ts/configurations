@@ -1,4 +1,4 @@
-import { DecryptResponse, KMS } from '@aws-sdk/client-kms';
+import { DecryptCommand, DecryptCommandInput, DecryptCommandOutput, DecryptResponse, KMS } from '@aws-sdk/client-kms';
 import { InvokeCommandInput, InvokeCommandOutput, Lambda } from '@aws-sdk/client-lambda';
 
 import { Logger, LoggerService } from '@mu-ts/logger';
@@ -76,12 +76,16 @@ export class LambdaKMSStore implements Source {
       // @ts-ignore
       const payload: { blob: string; encoding: string } = JSON.parse(Buffer.from(response.Payload).toString());
       this.logger.debug('refresh()', { payload });
+      const input: DecryptCommandInput = {
+        KeyId: this.kmsARN,
+        CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding),
+      };
 
-      const decryptResult: DecryptResponse = await this.kms
-        .decrypt({ CiphertextBlob: Buffer.from(payload.blob, payload.encoding as BufferEncoding) });
+      const command: DecryptCommand = new DecryptCommand(input);
+      const { Plaintext }: DecryptCommandOutput = await this.kms.send(command);
 
-      if (Buffer.isBuffer(decryptResult.Plaintext)) {
-        const secrets: { [key: string]: string } = JSON.parse(Buffer.from(decryptResult.Plaintext).toString());
+      if (ArrayBuffer.isView(Plaintext)) {
+        const secrets: { [key: string]: string } = JSON.parse(new TextDecoder().decode(Plaintext));
         Object.keys(secrets).forEach((key: string) => this.secureCache.set(key, secrets[key]));
         this.logger.debug('refresh()', 'complete');
         this.initialized = true;

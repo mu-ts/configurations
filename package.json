@@ -1,6 +1,6 @@
 {
   "name": "@mu-ts/configurations",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Convenience around configurations.",
   "main": "./lib/index",
   "types": "./lib/index",
